@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consent Form — Intimate Practices</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200;12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap');
+
+  :root {
+    --bg: #f2f2f2;
+    --surface: #ffffff;
+    --border: #e8e2da;
+    --text: #2c2520;
+    --text-soft: #7a6f65;
+    --accent: #b8564f;
+    --accent-hover: #9e443e;
+    --yes: #5a8a6a;
+    --yes-bg: #e8f5ec;
+    --no: #c26258;
+    --no-bg: #fce8e6;
+    --maybe: #c4963a;
+    --maybe-bg: #fef6e4;
+    --note-bg: #f3f0eb;
+    --category-line: #d4cbc0;
+    --shadow: 0 1px 3px rgba(44,37,32,0.06), 0 4px 12px rgba(44,37,32,0.04);
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+
+  header h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 500;
+    font-size: 2.8rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    text-transform: uppercase;
+    font-optical-sizing: auto;
+  }
+
+  header p {
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .info-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .info-bar input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.9rem;
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+
+  .info-bar input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-soft);
+  }
+
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .legend-dot.yes { background: var(--yes); }
+  .legend-dot.no { background: var(--no); }
+  .legend-dot.maybe { background: var(--maybe); }
+
+  .controls-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 200px;
+    max-width: 340px;
+    position: relative;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.88rem;
+    background: var(--surface);
+  }
+
+  .search-box input:focus { outline: none; border-color: var(--accent); }
+
+  .search-box::before {
+    content: '⌕';
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-soft);
+    font-size: 1.1rem;
+  }
+
+  .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+  }
+
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-accent {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .btn-accent:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: white;
+  }
+
+  .category {
+    margin-bottom: 2rem;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.8rem 0;
+    border-bottom: 2px solid var(--category-line);
+    margin-bottom: 0.5rem;
+    user-select: none;
+  }
+
+  .category-header:hover { opacity: 0.8; }
+
+  .category-icon {
+    font-size: 1.3rem;
+    width: 2rem;
+    text-align: center;
+  }
+
+  .category-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.15rem;
+    flex: 1;
+  }
+
+  .category-count {
+    font-size: 0.8rem;
+    color: var(--text-soft);
+    background: var(--note-bg);
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+  }
+
+  .category-toggle {
+    font-size: 1.2rem;
+    color: var(--text-soft);
+    transition: transform 0.3s;
+  }
+
+  .category-toggle.collapsed { transform: rotate(-90deg); }
+
+  .items-list { overflow: hidden; }
+
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f0ece7;
+    animation: fadeIn 0.15s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .item:last-child { border-bottom: none; }
+
+  .item-label {
+    font-size: 0.9rem;
+    color: var(--text);
+    padding-left: 0.5rem;
+  }
+
+  .item-label small {
+    display: block;
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    margin-top: 0.1rem;
+    font-style: italic;
+  }
+
+  .tri-toggle {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .tri-toggle button {
+    padding: 0.35rem 0.75rem;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text-soft);
+    min-width: 56px;
+  }
+
+  .tri-toggle button:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+
+  .tri-toggle button.active-yes {
+    background: var(--yes-bg);
+    color: var(--yes);
+    font-weight: 600;
+  }
+
+  .tri-toggle button.active-no {
+    background: var(--no-bg);
+    color: var(--no);
+    font-weight: 600;
+  }
+
+  .tri-toggle button.active-maybe {
+    background: var(--maybe-bg);
+    color: var(--maybe);
+    font-weight: 600;
+  }
+
+  .tri-toggle button:hover:not([class*="active"]) {
+    background: var(--note-bg);
+  }
+
+  .notes-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .notes-section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .notes-section textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    background: var(--surface);
+    line-height: 1.7;
+  }
+
+  .notes-section textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .stats {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    min-width: 100px;
+  }
+
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+
+  .stat-num.yes { color: var(--yes); }
+  .stat-num.no { color: var(--no); }
+  .stat-num.maybe { color: var(--maybe); }
+  .stat-num.empty { color: var(--text-soft); }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.1rem;
+  }
+
+  .actions-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-soft);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.6rem; }
+    .item { grid-template-columns: 1fr; gap: 0.4rem; }
+    .tri-toggle { justify-self: start; }
+    .info-bar { flex-direction: column; }
+    .controls-top { flex-direction: column; align-items: stretch; }
+    .search-box { max-width: 100%; }
+  }
+
+  /* PDF generation overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(44,37,32,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .overlay-box {
+    background: var(--surface);
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+
+  <header>
+    <h1>Consent Form</h1>
+    <p>This is a communication tool between us. We each fill in, on our own, what we consent to receive.
+      Then we'll compare our answers so that each of us fully understands what the other consents to receive — and therefore what the other will give, explore or decline.
+      Let's keep in mind that anything consented to here can be reviewed, discussed and changed by either of us, at any time.
+      This document is strictly private, of course.
+      Shall we begin?
+    </p>
+  </header>
+
+  <div class="info-bar">
+    <input type="text" id="name1" placeholder="Name / Nickname — Person 1" />
+    <input type="text" id="name2" placeholder="Name / Nickname — Person 2 (optional)" />
+    <input type="date" id="formDate" />
+  </div>
+
+  <div class="legend">
+    <span><span class="legend-dot yes"></span> Yes</span>
+    <span><span class="legend-dot no"></span> No</span>
+    <span><span class="legend-dot maybe"></span> To explore</span>
+    <span style="color:#bbb">· Empty = not answered</span>
+  </div>
+
+  <div class="controls-top">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search for a practice…" />
+    </div>
+    <div class="btn-group">
+      <button class="btn" onclick="expandAll()">Expand all</button>
+      <button class="btn" onclick="collapseAll()">Collapse all</button>
+      <button class="btn" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <div id="categories"></div>
+
+  <div class="notes-section">
+    <h2>📝 Additional notes, limits, safe words</h2>
+    <textarea id="notesArea" placeholder="Safe word(s), specific limits, allergies, medical conditions, aftercare notes, or any other important comment…"></textarea>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="actions-bottom">
+    <button class="btn btn-accent" onclick="generatePDF()">📄 Export to PDF</button>
+  </div>
+
+  <footer>
+    This form is a communication tool between us, as consenting adults.<br>
+    It does not replace an open and honest conversation between partners. We'll have that conversation anyway. We'll arrange it however you like.
+  </footer>
+</div>
+
+<div class="overlay hidden" id="pdfOverlay">
+  <div class="overlay-box">
+    <div class="spinner"></div>
+    <p>Generating PDF…</p>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const DATA = [
+  {
+    name: "Basics & Tenderness",
+    icon: "💕",
+    items: [
+      { id: "kiss_mouth", label: "Kissing on the mouth" },
+      { id: "kiss_body", label: "Kissing on the body" },
+      { id: "kiss_neck", label: "Kissing on the neck" },
+      { id: "cuddle", label: "Cuddles, hugs" },
+      { id: "massage_sensual", label: "Sensual massage (body)" },
+      { id: "massage_erotic", label: "Erotic massage (genital areas)" },
+      { id: "caress", label: "Caresses all over the body" },
+      { id: "hand_holding", label: "Holding hands, tender gestures" },
+      { id: "hair_pull_soft", label: "Gently pulling my hair" },
+      { id: "scratch_soft", label: "Light scratching" },
+      { id: "bite_soft", label: "Light nibbling" },
+      { id: "hickey", label: "Hickeys" },
+      { id: "ear_play", label: "Ear stimulation (breath, kisses)" },
+    ]
+  },
+  {
+    name: "Oral sex",
+    icon: "👄",
+    items: [
+      { id: "cunnilingus", label: "Cunnilingus" },
+      { id: "fellatio", label: "Fellatio" },
+      { id: "deepthroat", label: "Deep throat" },
+      { id: "facesit", label: "Facesitting" },
+      { id: "69", label: "69" },
+      { id: "anilingus", label: "Anilingus (rimming)" },
+    ]
+  },
+  {
+    name: "Penetrative",
+    icon: "🔥",
+    items: [
+      { id: "slow_sex", label: "Tantric / very slow sex" },
+      { id: "rough_sex", label: "Intense / vigorous sex" },
+      { id: "hand_vaginal", label: "Vaginal fingering" },
+      { id: "hand_clitoral", label: "Manual clitoral stimulation" },
+      { id: "handjob", label: "Handjob (penis)" },
+      { id: "prostate_ext", label: "External prostate massage" },
+      { id: "prostate_int", label: "Internal prostate massage" },
+      { id: "fisting_vag", label: "Vaginal fisting" },
+      { id: "fisting_anal", label: "Anal fisting" },
+      { id: "mutual_masturb", label: "Mutual masturbation" },
+      { id: "solo_masturb", label: "Masturbating in front of you" },
+      { id: "toys", label: "Toys" },
+      { id: "plug_anal", label: "Butt plug" },
+      { id: "vaginal_pen", label: "Vaginal penetration" },
+      { id: "anal_pen", label: "Anal penetration" },
+    ]
+  },
+  {
+    name: "Breath & Choking",
+    icon: "💨",
+    items: [
+      { id: "breath_hand", label: "Hand on the throat (light pressure)", desc: "⚠️ Real medical risk" },
+      { id: "breath_light", label: "Light breath restriction", desc: "⚠️ Real medical risk" },
+      { id: "breath_heavy", label: "Heavy breath restriction", desc: "⚠️ High risk — training recommended" },
+      { id: "choking", label: "Choking", desc: "⚠️ High risk — training recommended" },
+      { id: "smothering", label: "Smothering (facesitting, pillow)", desc: "⚠️ High risk" },
+    ]
+  },
+  {
+    name: "Dominance & Submission",
+    icon: "⛓️",
+    items: [
+      { id: "dom_role", label: "Dominant role" },
+      { id: "sub_role", label: "Submissive role" },
+      { id: "switch", label: "Switch (alternating roles)" },
+      { id: "orders", label: "Giving / receiving orders" },
+      { id: "protocol", label: "Protocols (formal address, positions, titles)" },
+      { id: "kneeling", label: "Kneeling" },
+      { id: "collar", label: "Wearing / putting on a collar" },
+      { id: "leash", label: "Leash" },
+      { id: "service_sub", label: "Service (serving the dominant)" },
+      { id: "begging", label: "Begging" },
+      { id: "orgasm_ctrl", label: "Orgasm control" },
+      { id: "orgasm_denial", label: "Orgasm denial" },
+      { id: "task_assign", label: "Task assignment" },
+      { id: "punishment", label: "Punishments (general)" },
+      { id: "reward", label: "Rewards" },
+    ]
+  },
+  {
+    name: "Bondage & Restraint",
+    icon: "🪢",
+    items: [
+      { id: "wrist_tie", label: "Tying the wrists" },
+      { id: "ankle_tie", label: "Tying the ankles" },
+      { id: "nipple_clamps", label: "Nipple clamps" },
+      { id: "spreader", label: "Spreader bar" },
+      { id: "tape_bondage", label: "Tape bondage" },
+      { id: "handcuffs", label: "Handcuffs" },
+      { id: "blindfold", label: "Blindfold" },
+      { id: "gag", label: "Gag" },
+      { id: "furniture_bond", label: "Tied to furniture" },
+    ]
+  },
+  {
+    name: "Impact & Sensation",
+    icon: "🖐️",
+    items: [
+      { id: "spanking_hand", label: "Spanking (hand)" },
+      { id: "spanking_paddle", label: "Spanking (implement)" },
+      { id: "belt", label: "Belt" },
+      { id: "slapping_face", label: "Face slapping" },
+      { id: "slapping_body", label: "Body slapping" },
+      { id: "scratching", label: "Scratching" },
+      { id: "biting", label: "Biting" },
+      { id: "pinching", label: "Pinching" },
+      { id: "hair_pull", label: "Hair pulling (hard)" },
+      { id: "ice", label: "Ice / ice cubes" },
+      { id: "hot_wax", label: "Hot wax" },
+      { id: "wartenberg", label: "Wartenberg wheel" },
+    ]
+  },
+  {
+    name: "Role-play & Scenarios",
+    icon: "🎭",
+    items: [
+      { id: "rp_general", label: "Role-play (general)" },
+      { id: "rp_stranger", label: "Strangers at a bar" },
+      { id: "rp_authority", label: "Authority figure (teacher, boss…)" },
+      { id: "rp_uniform", label: "Uniforms" },
+      { id: "rp_maid", label: "Maid / servant" },
+      { id: "rp_daddy", label: "Daddy / Mommy (dynamic)" },
+      { id: "rp_brat", label: "Brat (teasing, insolence)" },
+      { id: "rp_prey", label: "Predator / Prey (primal play)" },
+      { id: "rp_cnc", label: "Light CNC scenario" },
+      { id: "rp_robot", label: "Objectification / doll / robot" },
+    ]
+  },
+  {
+    name: "Humiliation & Psychological",
+    icon: "🧠",
+    items: [
+      { id: "dirty_talk", label: "Dirty talk" },
+      { id: "name_calling", label: "Insults / degrading names" },
+      { id: "verbal_humil", label: "Verbal humiliation" },
+      { id: "body_comment", label: "Comments about the body" },
+      { id: "public_humil", label: "Public humiliation" },
+      { id: "writing_body", label: "Writing on the body" },
+      { id: "bootlicking", label: "Licking boots / shoes" },
+      { id: "serve_naked", label: "Serving naked" },
+      { id: "ignore", label: "Being ignored" },
+    ]
+  },
+  {
+    name: "Fetishes",
+    icon: "👠",
+    items: [
+      { id: "feet", label: "Feet" },
+      { id: "shoes", label: "Shoes / heels" },
+      { id: "stockings", label: "Stockings / tights" },
+      { id: "lingerie", label: "Lingerie" },
+      { id: "latex", label: "Latex / rubber" },
+      { id: "leather", label: "Leather" },
+      { id: "nylon", label: "Nylon" },
+      { id: "silk_satin", label: "Silk / satin" },
+      { id: "corset", label: "Corset" },
+      { id: "mask", label: "Masks" },
+      { id: "gloves", label: "Gloves" },
+    ]
+  },
+  {
+    name: "Exhibitionism & Voyeurism",
+    icon: "👁️",
+    items: [
+      { id: "watched", label: "Being watched during sex" },
+      { id: "watch_others", label: "Watching other people" },
+      { id: "mirror_sex", label: "Sex in front of a mirror" },
+      { id: "photo_intimate", label: "Intimate photos (private)" },
+      { id: "video_intimate", label: "Intimate videos (private)" },
+      { id: "sextape", label: "Sex tape" },
+      { id: "sexting", label: "Sexting / nudes" },
+      { id: "phone_sex", label: "Phone sex" },
+      { id: "video_sex", label: "Video call sex" },
+      { id: "public_touch", label: "Touching in public (discreet)" },
+      { id: "semi_public", label: "Sex in a semi-public place" },
+      { id: "window_play", label: "In front of a window" },
+      { id: "strip_tease", label: "Striptease" },
+      { id: "cam_live", label: "Live cam / live streaming" },
+    ]
+  },
+  {
+    name: "Bodily fluids",
+    icon: "💧",
+    items: [
+      { id: "fluid_saliva", label: "Saliva / spitting" },
+      { id: "fluid_cum_body", label: "Semen on the body" },
+      { id: "fluid_tears", label: "Tears" },
+      { id: "fingers_mouth_1", label: "Clean fingers in my mouth" },
+      { id: "fingers_mouth_2", label: "Soiled fingers (fluids) in my mouth" },
+      { id: "oral_ejac", label: "Ejaculation in the mouth" },
+      { id: "oral_swallow", label: "Swallowing" },
+      { id: "oral_face", label: "Ejaculation on the face" },
+      { id: "oral_body", label: "Ejaculation on the body" },
+    ]
+  },
+  {
+    name: "Pain & Extreme",
+    icon: "⚡",
+    items: [
+      { id: "pain_light", label: "Light pain (arousing)" },
+      { id: "pain_moderate", label: "Moderate pain" },
+      { id: "pain_heavy", label: "Intense pain" },
+    ]
+  },
+  {
+    name: "Consensual Non-Consent (CNC) & Other",
+    icon: "🔒",
+    items: [
+      { id: "cnc_light", label: "Light CNC (role-played resistance)", desc: "Consensual non-consent, scripted" },
+      { id: "free_use", label: "Free use (standing availability)", desc: "Framed by prior agreement" },
+    ]
+  },
+  {
+    name: "Communication & Aftercare",
+    icon: "🤝",
+    items: [
+      { id: "safeword", label: "Using a safe word" },
+      { id: "stoplight", label: "Traffic light system (green/yellow/red)" },
+      { id: "nonverbal_signal", label: "Non-verbal stop signal" },
+      { id: "check_in", label: "Regular check-ins during the scene" },
+      { id: "aftercare_cuddle", label: "Aftercare: cuddles" },
+      { id: "aftercare_talk", label: "Aftercare: talking" },
+      { id: "aftercare_food", label: "Aftercare: water, food" },
+      { id: "aftercare_blanket", label: "Aftercare: blanket, warmth" },
+      { id: "aftercare_alone", label: "Aftercare: time alone" },
+      { id: "aftercare_next_day", label: "Next-day check-in" },
+      { id: "debrief", label: "Post-session debrief" },
+    ]
+  }
+];
+
+// ── STATE ──
+let responses = {};
+let collapsed = {};
+
+// ── RENDER ──
+function render(filter = '') {
+  const container = document.getElementById('categories');
+  container.innerHTML = '';
+  const filterLower = filter.toLowerCase();
+
+  DATA.forEach((cat, ci) => {
+    const filteredItems = filter
+      ? cat.items.filter(it => it.label.toLowerCase().includes(filterLower) || (it.desc && it.desc.toLowerCase().includes(filterLower)))
+      : cat.items;
+
+    if (filter && filteredItems.length === 0) return;
+
+    const catDiv = document.createElement('div');
+    catDiv.className = 'category';
+
+    const isCollapsed = collapsed[ci] && !filter;
+    const answered = cat.items.filter(it => responses[it.id]).length;
+
+    catDiv.innerHTML = `
+      <div class="category-header" onclick="toggleCategory(${ci})">
+        <span class="category-icon">${cat.icon}</span>
+        <span class="category-title">${cat.name}</span>
+        <span class="category-count">${answered}/${cat.items.length}</span>
+        <span class="category-toggle ${isCollapsed ? 'collapsed' : ''}">▾</span>
+      </div>
+      <div class="items-list ${isCollapsed ? 'hidden' : ''}">
+        ${filteredItems.map(it => {
+          const val = responses[it.id] || '';
+          return `
+            <div class="item">
+              <div class="item-label">
+                ${it.label}
+                ${it.desc ? `<small>${it.desc}</small>` : ''}
+              </div>
+              <div class="tri-toggle">
+                <button class="${val === 'oui' ? 'active-yes' : ''}" onclick="setResponse('${it.id}','oui',this)">Yes</button>
+                <button class="${val === 'maybe' ? 'active-maybe' : ''}" onclick="setResponse('${it.id}','maybe',this)">To explore</button>
+                <button class="${val === 'non' ? 'active-no' : ''}" onclick="setResponse('${it.id}','non',this)">No</button>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    `;
+    container.appendChild(catDiv);
+  });
+
+  updateStats();
+}
+
+function setResponse(id, value, btn) {
+  if (responses[id] === value) {
+    delete responses[id];
+  } else {
+    responses[id] = value;
+  }
+  render(document.getElementById('searchInput').value);
+}
+
+function toggleCategory(i) {
+  collapsed[i] = !collapsed[i];
+  render(document.getElementById('searchInput').value);
+}
+
+function expandAll() { collapsed = {}; render(document.getElementById('searchInput').value); }
+function collapseAll() { DATA.forEach((_, i) => collapsed[i] = true); render(document.getElementById('searchInput').value); }
+
+function resetAll() {
+  if (!confirm('Reset all answers?')) return;
+  responses = {};
+  document.getElementById('notesArea').value = '';
+  document.getElementById('name1').value = '';
+  document.getElementById('name2').value = '';
+  render();
+}
+
+function updateStats() {
+  const vals = Object.values(responses);
+  const yes = vals.filter(v => v === 'oui').length;
+  const no = vals.filter(v => v === 'non').length;
+  const maybe = vals.filter(v => v === 'maybe').length;
+  const total = DATA.reduce((a, c) => a + c.items.length, 0);
+  const empty = total - yes - no - maybe;
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-num yes">${yes}</div><div class="stat-label">Yes</div></div>
+    <div class="stat"><div class="stat-num maybe">${maybe}</div><div class="stat-label">To explore</div></div>
+    <div class="stat"><div class="stat-num no">${no}</div><div class="stat-label">No</div></div>
+    <div class="stat"><div class="stat-num empty">${empty}</div><div class="stat-label">Not answered</div></div>
+  `;
+}
+
+// ── SEARCH ──
+document.getElementById('searchInput').addEventListener('input', e => {
+  render(e.target.value);
+});
+
+// ── PDF EXPORT ──
+async function generatePDF() {
+  const overlay = document.getElementById('pdfOverlay');
+  overlay.classList.remove('hidden');
+
+  await new Promise(r => setTimeout(r, 100));
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const W = 210, H = 297;
+    const margin = 18;
+    let y = margin;
+    const lineH = 5.5;
+    const colW = (W - 2 * margin);
+
+    const name1 = document.getElementById('name1').value || '—';
+    const name2 = document.getElementById('name2').value || '—';
+    const formDate = document.getElementById('formDate').value || new Date().toISOString().slice(0,10);
+    const notes = document.getElementById('notesArea').value;
+
+    function checkPage(need) {
+      if (y + need > H - margin) {
+        doc.addPage();
+        y = margin;
+        return true;
+      }
+      return false;
+    }
+
+    // Strip emojis and unsupported unicode for PDF
+    function pdfSafe(str) {
+      return str.replace(/[\u{1F000}-\u{1FFFF}|\u{2600}-\u{27BF}|\u{FE00}-\u{FEFF}|\u{200D}|\u{20E3}|\u{E0020}-\u{E007F}]/gu, '').trim();
+    }
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Consent Form', W / 2, y, { align: 'center' });
+    y += 8;
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120);
+    doc.text(`Person 1: ${name1}    |    Person 2: ${name2}    |    Date: ${formDate}`, W / 2, y, { align: 'center' });
+    doc.setTextColor(0);
+    y += 3;
+
+    doc.setDrawColor(200);
+    doc.line(margin, y, W - margin, y);
+    y += 6;
+
+    // Legend
+    doc.setFontSize(7.5);
+    doc.setTextColor(90);
+    doc.text('Answers are written out in full: Yes / To explore / No / — (not answered)', W / 2, y, { align: 'center' });
+    doc.setTextColor(0);
+    y += 7;
+
+    // Categories
+    DATA.forEach(cat => {
+      checkPage(14);
+
+      // Category header
+      doc.setFillColor(245, 242, 237);
+      doc.rect(margin, y - 1, colW, 7, 'F');
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text(cat.name, margin + 2, y + 3.5);
+      y += 9;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+
+      cat.items.forEach(it => {
+        checkPage(lineH + 1);
+
+        const val = responses[it.id];
+        let displayText = '—';
+        let r = 150, g = 150, b = 150;
+        if (val === 'oui') { displayText = 'Yes'; r = 68; g = 120; b = 85; }
+        else if (val === 'non') { displayText = 'No'; r = 180; g = 75; b = 65; }
+        else if (val === 'maybe') { displayText = 'To explore'; r = 180; g = 140; b = 45; }
+
+        doc.setTextColor(50);
+        doc.text(pdfSafe(it.label), margin + 2, y + 3);
+
+        doc.setTextColor(r, g, b);
+        doc.setFont('helvetica', 'bold');
+        doc.text(displayText, W - margin - 4, y + 3, { align: 'right' });
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0);
+
+        // Light line
+        doc.setDrawColor(235);
+        doc.line(margin, y + lineH, W - margin, y + lineH);
+        y += lineH + 0.5;
+      });
+
+      y += 3;
+    });
+
+    // Notes
+    if (notes.trim()) {
+      checkPage(25);
+      y += 3;
+      doc.setDrawColor(200);
+      doc.line(margin, y, W - margin, y);
+      y += 6;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Additional notes', margin, y + 3);
+      y += 8;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      const lines = doc.splitTextToSize(pdfSafe(notes), colW - 4);
+      lines.forEach(line => {
+        checkPage(lineH);
+        doc.text(line, margin + 2, y + 3);
+        y += lineH;
+      });
+    }
+
+    // Stats summary
+    checkPage(20);
+    y += 5;
+    doc.setDrawColor(200);
+    doc.line(margin, y, W - margin, y);
+    y += 6;
+    const vals = Object.values(responses);
+    const totalItems = DATA.reduce((a, c) => a + c.items.length, 0);
+    const yesC = vals.filter(v => v === 'oui').length;
+    const noC = vals.filter(v => v === 'non').length;
+    const maybeC = vals.filter(v => v === 'maybe').length;
+    doc.setFontSize(8);
+    doc.setTextColor(100);
+    doc.text(`Summary: ${yesC} Yes  ·  ${maybeC} To explore  ·  ${noC} No  ·  ${totalItems - yesC - noC - maybeC} Not answered`, W / 2, y + 3, { align: 'center' });
+    y += 8;
+    doc.setFontSize(7);
+    doc.text('This document is confidential. It is a communication tool between consenting adults.', W / 2, y + 3, { align: 'center' });
+
+    doc.save(`consent_${formDate}.pdf`);
+  } catch (err) {
+    console.error(err);
+    alert('Error while generating the PDF. Check the console.');
+  }
+
+  overlay.classList.add('hidden');
+}
+
+// ── INIT ──
+document.getElementById('formDate').value = new Date().toISOString().slice(0, 10);
+render();
+</script>
+</body>
+</html>
